@@ -29,7 +29,7 @@ func init() {
 func Init(path string) {
 	err := cleanenv.ReadConfig(path+"app.yaml", App)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Application configuration initialize failed, app.yaml has a problem")
+		log.Warn().Err(err).Msg("Application configuration initialize failed, app.yaml has a problem")
 	}
 	_ = cleanenv.ReadEnv(App)
 }
