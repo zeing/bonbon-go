@@ -1,6 +1,8 @@
+// +heroku goVersion go1.16
+
 module bonbon-go
 
-go 1.17
+go 1.16
 
 require (
 	github.com/dghubble/go-twitter v0.0.0-20211115160449-93a8679adecb
