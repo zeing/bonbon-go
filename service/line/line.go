@@ -42,12 +42,12 @@ func (svc *defaultServices) Handler(ctx *gin.Context) (*linebot.Event, *twitter.
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
 				return svc.handleText(event, message)
-			case *linebot.StickerMessage:
-				svc.handleSticker(event, message)
+			//case *linebot.StickerMessage:
+			//	svc.handleSticker(event, message)
 			case *linebot.LocationMessage:
 				return svc.handleLocation(event, message)
-			case *linebot.ImageMessage:
-				svc.handleImage(event, message)
+				//case *linebot.ImageMessage:
+				//	svc.handleImage(event, message)
 			}
 		}
 	}
