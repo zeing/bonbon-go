@@ -3,24 +3,33 @@ package controller
 import (
 	"bonbon-go/service"
 	lineservice "bonbon-go/service/line"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 )
 
-type LineBotController struct {
+type LineInterfaceImpl struct {
 	LineBotService lineservice.LineBotService
 }
 
-type LineInterfaceImpl interface {
+type LineBotController interface {
 	HandlerEvent(ctx *gin.Context) (string, error)
 }
 
-func NewLineBotController(services *service.Services) LineInterfaceImpl {
-	return &LineBotController{
+func NewLineBotController(services *service.Services) LineBotController {
+	return &LineInterfaceImpl{
 		LineBotService: services.LineBotService,
 	}
 }
 
-func (svc *LineBotController) HandlerEvent(ctx *gin.Context) (string, error) {
-	msg, err := svc.LineBotService.Handler(ctx)
-	return msg, err
+func (svc *LineInterfaceImpl) HandlerEvent(ctx *gin.Context) (string, error) {
+	event, tweet, err := svc.LineBotService.Handler(ctx)
+	if err != nil {
+		log.Ctx(ctx).Err(err).Msg("Line Event Error")
+	}
+	replyMessage := fmt.Sprintf(
+		"Tweeted !! | See at https://twitter.com/bon2_official/status/%s", tweet.IDStr)
+	err = svc.LineBotService.ReplyToUser(event, replyMessage)
+
+	return "", err
 }

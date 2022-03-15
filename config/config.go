@@ -12,6 +12,12 @@ type appconfig struct {
 		ChannelSecret string `yaml:"channel_secret" env:"CHANNEL_SECRET"`
 		ChannelToken  string `yaml:"channel_token" env:"CHANNEL_TOKEN"`
 	} `yaml:"line"`
+	Twitter struct {
+		ConsumerKey       string `yaml:"consumer_key" env:"CONSUMER_KEY"`
+		ConsumerSecret    string `yaml:"consumer_secret" env:"CONSUMER_SECRET"`
+		AccessTokenKey    string `yaml:"access_token_key" env:"ACCESS_TOKEN_KEY"`
+		AccessTokenSecret string `yaml:"access_token_secret" env:"ACCESS_TOKEN_SECRET"`
+	} `yaml:"twitter"`
 }
 
 var App *appconfig

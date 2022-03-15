@@ -11,6 +11,6 @@ type Services struct {
 
 func Init(cli *client.Clients) *Services {
 	return &Services{
-		LineBotService: lineservice.Init(cli.LineBotClient),
+		LineBotService: lineservice.Init(cli.LineBotClient, cli.TwitterClient),
 	}
 }
