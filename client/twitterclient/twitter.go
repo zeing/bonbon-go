@@ -2,6 +2,7 @@ package twitterclient
 
 import (
 	"bonbon-go/config"
+	"encoding/base64"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"net/http"
@@ -39,4 +40,12 @@ func (tc TwitterImpl) Tweet(text string) (*twitter.Tweet, error) {
 		return nil, err
 	}
 	return tweet, nil
+}
+
+func (tc TwitterImpl) UploadMedia(img base64.Encoding) (string, error) {
+	//_, err := tc.TwitterHttpClient.Post("test", "", img)
+	//if err != nil {
+	//	return "", err
+	//}
+	return "", nil
 }

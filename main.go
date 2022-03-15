@@ -14,5 +14,9 @@ func main() {
 	services := service.Init(clients)
 	srv := web.Init(services)
 
-	srv.Run(":" + config.App.Port)
+	port := config.App.Port
+	if port == "" {
+		port = "8080"
+	}
+	srv.Run(":" + port)
 }

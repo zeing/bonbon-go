@@ -6,6 +6,7 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20211115160449-93a8679adecb
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/gin-gonic/gin v1.7.7
+	github.com/google/go-querystring v1.1.0
 	github.com/ilyakaznacheev/cleanenv v1.2.6
 	github.com/line/line-bot-sdk-go/v7 v7.13.0
 	github.com/rs/zerolog v1.26.1
@@ -20,7 +21,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
