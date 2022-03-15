@@ -12,7 +12,7 @@ func wrapper(f func(c *gin.Context) (string, error)) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		_, err := f(c)
-		log.Error().Err(err).Msg("Wrap error")
+		log.Ctx(c).Error().Err(err).Msg("Wrap error")
 		//if err != nil {
 		//	c.JSON(503, gin.H{"status": err})
 		//	return
