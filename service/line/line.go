@@ -2,7 +2,6 @@ package lineservice
 
 import (
 	"bonbon-go/client/twitterclient"
-	"bytes"
 	"fmt"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/gin-gonic/gin"
@@ -46,8 +45,8 @@ func (svc *defaultServices) Handler(ctx *gin.Context) (*linebot.Event, *twitter.
 			//	svc.handleSticker(event, message)
 			case *linebot.LocationMessage:
 				return svc.handleLocation(event, message)
-				//case *linebot.ImageMessage:
-				//	svc.handleImage(event, message)
+			case *linebot.ImageMessage:
+				return svc.handleImage(event, message)
 			}
 		}
 	}
@@ -55,7 +54,7 @@ func (svc *defaultServices) Handler(ctx *gin.Context) (*linebot.Event, *twitter.
 }
 
 func (svc *defaultServices) handleText(event *linebot.Event, message *linebot.TextMessage) (*linebot.Event, *twitter.Tweet, error) {
-	tweet, err := svc.tc.Tweet(message.Text)
+	tweet, err := svc.tc.Tweet(message.Text, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -86,29 +85,38 @@ func (svc *defaultServices) handleLocation(event *linebot.Event, message *linebo
 	messages := fmt.Sprintf(
 		"%s %s", message.Title, location)
 
-	tweet, err := svc.tc.Tweet(messages)
+	params := &twitter.StatusUpdateParams{
+		Lat:  &message.Latitude,
+		Long: &message.Longitude,
+	}
+	tweet, err := svc.tc.Tweet(messages, params)
 	if err != nil {
 		return nil, nil, err
 	}
 	return event, tweet, err
 }
 
-func (svc *defaultServices) handleImage(event *linebot.Event, message *linebot.ImageMessage) {
+func (svc *defaultServices) handleImage(event *linebot.Event, message *linebot.ImageMessage) (*linebot.Event, *twitter.Tweet, error) {
 	content, err := svc.lbc.GetMessageContent(message.ID).Do()
 	if err != nil {
-		log.Logger.Print(err)
-	}
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(content.Content)
-	//bufStr := buf.String()
-	_, err = svc.tc.Tweet("test")
-	if err != nil {
-		log.Logger.Print(err)
+		return nil, nil, err
 	}
 
-	replyMessage := fmt.Sprintf(
-		"Title is %s, address is %s", message.ID, content.ContentType)
-	svc.ReplyToUser(event, replyMessage)
+	media, err := svc.tc.UploadMedia(message.ID, content.Content)
+	if err != nil {
+		log.Logger.Err(err).Msg("error to upload media")
+		return nil, nil, err
+	}
+
+	params := &twitter.StatusUpdateParams{
+		MediaIds: []int64{media.MediaId},
+	}
+	tweet, err := svc.tc.Tweet("", params)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return event, tweet, nil
 }
 
 func (svc *defaultServices) ReplyToUser(event *linebot.Event, replyMessage string) error {
