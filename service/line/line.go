@@ -2,6 +2,7 @@ package lineservice
 
 import (
 	"bonbon-go/client/twitterclient"
+	"bonbon-go/constant"
 	"fmt"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,8 @@ func (svc *defaultServices) Handler(ctx *gin.Context) (*linebot.Event, *twitter.
 				return svc.handleLocation(event, message)
 			case *linebot.ImageMessage:
 				return svc.handleImage(event, message)
+				//case *linebot.VideoMessage:
+				//	return svc.handleVideo(event, message)
 			}
 		}
 	}
@@ -102,9 +105,35 @@ func (svc *defaultServices) handleImage(event *linebot.Event, message *linebot.I
 		return nil, nil, err
 	}
 
-	media, err := svc.tc.UploadMedia(message.ID, content.Content)
+	media, err := svc.tc.UploadMedia(message.ID, content.Content, constant.TweetImage)
 	if err != nil {
 		log.Logger.Err(err).Msg("error to upload media")
+		return nil, nil, err
+	}
+
+	params := &twitter.StatusUpdateParams{
+		MediaIds: []int64{media.MediaId},
+	}
+	tweet, err := svc.tc.Tweet("", params)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return event, tweet, nil
+}
+
+func (svc *defaultServices) handleVideo(event *linebot.Event, message *linebot.VideoMessage) (*linebot.Event, *twitter.Tweet, error) {
+	content, err := svc.lbc.GetMessageContent(message.ID).Do()
+	if err != nil {
+		log.Error().Err(err).Msg("Error: line get content from msg")
+		return nil, nil, err
+	}
+	println("content", content.ContentLength)
+	media, err := svc.tc.UploadMedia(message.ID, content.Content, constant.TweetVideo)
+	println("media", media.MediaId)
+
+	if err != nil {
+		log.Error().Err(err).Msg("error to upload media")
 		return nil, nil, err
 	}
 
