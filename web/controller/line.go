@@ -25,15 +25,17 @@ func NewLineBotController(services *service.Services) LineBotController {
 func (svc *LineInterfaceImpl) HandlerEvent(ctx *gin.Context) (string, error) {
 	event, tweet, err := svc.LineBotService.Handler(ctx)
 	if err != nil {
-		log.Error().Err(err).Msg("Line Event Error")
+		log.Error().Err(err).Msg("Error => Line Event Error")
 		return "", err
 	}
-	replyMessage := fmt.Sprintf(
-		"Tweeted !! | See at https://twitter.com/bon2_official/status/%s", tweet.IDStr)
-	err = svc.LineBotService.ReplyToUser(event, replyMessage)
-	if err != nil {
-		log.Error().Err(err).Msg("Twitter Tweet Error")
-		return "", err
+	if tweet != nil {
+		replyMessage := fmt.Sprintf(
+			"Tweeted !! | See at https://twitter.com/bon2_official/status/%s", tweet.IDStr)
+		err = svc.LineBotService.ReplyToUser(event, replyMessage)
+		if err != nil {
+			log.Error().Err(err).Msg("Error => Twitter Tweet Error")
+			return "", err
+		}
 	}
 
 	return "", nil

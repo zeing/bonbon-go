@@ -12,8 +12,8 @@ func NewLineBotClient() *linebot.Client {
 		config.App.Line.ChannelToken,
 	)
 	if err != nil {
-		log.Error().Err(err)
+		log.Error().Err(err).Msg("Line Client Error")
+		panic(err)
 	}
-
 	return client
 }
