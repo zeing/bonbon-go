@@ -18,6 +18,9 @@ type appconfig struct {
 		AccessTokenKey    string `yaml:"access_token_key" env:"ACCESS_TOKEN_KEY"`
 		AccessTokenSecret string `yaml:"access_token_secret" env:"ACCESS_TOKEN_SECRET"`
 	} `yaml:"twitter"`
+	Telegram struct {
+		Token string `yaml:"telegram_token" env:"TELEGRAM_TOKEN"`
+	} `yaml:"telegram"`
 }
 
 var App *appconfig

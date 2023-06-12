@@ -22,6 +22,7 @@ type TwitterImpl struct {
 type TwitterClient interface {
 	Tweet(text string, params *twitter.StatusUpdateParams) (*twitter.Tweet, error)
 	UploadMedia(filename string, media io.Reader, mediaType string) (*UploadMediaResponse, error)
+	UploadMediaBase64(media string, mediaType string) (*UploadMediaResponse, error)
 }
 
 func NewTwitterClient() TwitterClient {
@@ -77,6 +78,41 @@ func (tc TwitterImpl) UploadMedia(filename string, media io.Reader, mediaType st
 	}
 
 	writer.WriteField("media_category", mediaType)
+
+	// close form
+	writer.Close()
+
+	url := fmt.Sprintf(
+		"https://upload.twitter.com/1.1/media/upload.json")
+	res, err := tc.TwitterHttpClient.Post(url, writer.FormDataContentType(), bytes.NewReader(body.Bytes()))
+	if err != nil {
+		log.Error().Err(err).Msg("tc.TwitterHttpClient.Post error")
+		return nil, err
+	}
+
+	resByte, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Error().Err(err).Msg("read response error")
+		return nil, err
+	}
+
+	response := &UploadMediaResponse{}
+	err = json.Unmarshal(resByte, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (tc TwitterImpl) UploadMediaBase64(media string, mediaType string) (*UploadMediaResponse, error) {
+
+	// create body form
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	writer.WriteField("media_category", mediaType)
+	writer.WriteField("media_data", media)
 
 	// close form
 	writer.Close()

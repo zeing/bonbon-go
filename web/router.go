@@ -23,6 +23,7 @@ func Init(services *service.Services) *gin.Engine {
 	srv := gin.Default()
 
 	lineCtrl := controller.NewLineBotController(services)
+	telegramCtrl := controller.NewTelegramController(services)
 
 	auth := srv.Group("/line")
 	{
@@ -32,6 +33,9 @@ func Init(services *service.Services) *gin.Engine {
 	srv.GET("/test", func(c *gin.Context) {
 		c.String(http.StatusOK, "ohai")
 	})
+	go func() {
+		telegramCtrl.HandlerEvent()
+	}()
 
 	return srv
 }
